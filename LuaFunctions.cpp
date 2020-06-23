@@ -450,8 +450,8 @@ ElunaRegister<Player> PlayerMethods[] =
     { "GetAccountId", &LuaPlayer::GetAccountId },
     { "GetAccountName", &LuaPlayer::GetAccountName },
 #if defined (TBC) || defined (WOTLK)
-    { "GetArenaPoints", &LuaPlayer::GetArenaPoints },
-    { "GetHonorPoints", &LuaPlayer::GetHonorPoints },
+    //{ "GetArenaPoints", &LuaPlayer::GetArenaPoints },
+    //{ "GetHonorPoints", &LuaPlayer::GetHonorPoints },
 #endif
     { "GetLifetimeKills", &LuaPlayer::GetLifetimeKills },
     { "GetPlayerIP", &LuaPlayer::GetPlayerIP },
@@ -532,8 +532,8 @@ ElunaRegister<Player> PlayerMethods[] =
 #endif
     { "SetBindPoint", &LuaPlayer::SetBindPoint },
 #if defined(TBC) || defined(WOTLK)
-    { "SetArenaPoints", &LuaPlayer::SetArenaPoints },
-    { "SetHonorPoints", &LuaPlayer::SetHonorPoints },
+    //{ "SetArenaPoints", &LuaPlayer::SetArenaPoints },
+    //{ "SetHonorPoints", &LuaPlayer::SetHonorPoints },
 #endif
 #ifdef CLASSIC
     { "SetHonorStoredKills", &LuaPlayer::SetHonorStoredKills },
@@ -674,7 +674,7 @@ ElunaRegister<Player> PlayerMethods[] =
     { "CompleteQuest", &LuaPlayer::CompleteQuest },
     { "IncompleteQuest", &LuaPlayer::IncompleteQuest },
     { "FailQuest", &LuaPlayer::FailQuest },
-    { "AddQuest", &LuaPlayer::AddQuest },
+    //{ "AddQuest", &LuaPlayer::AddQuest },
     { "RemoveQuest", &LuaPlayer::RemoveQuest },
     // {"RemoveActiveQuest", &LuaPlayer::RemoveActiveQuest},                                // :RemoveActiveQuest(entry) - UNDOCUMENTED - Removes an active quest
     // {"RemoveRewardedQuest", &LuaPlayer::RemoveRewardedQuest},                            // :RemoveRewardedQuest(entry) - UNDOCUMENTED - Removes a rewarded quest
@@ -704,8 +704,8 @@ ElunaRegister<Player> PlayerMethods[] =
     { "DurabilityRepairAll", &LuaPlayer::DurabilityRepairAll },
     { "DurabilityRepair", &LuaPlayer::DurabilityRepair },
 #if defined(TBC) || defined(WOTLK)
-    { "ModifyHonorPoints", &LuaPlayer::ModifyHonorPoints },
-    { "ModifyArenaPoints", &LuaPlayer::ModifyArenaPoints },
+    //{ "ModifyHonorPoints", &LuaPlayer::ModifyHonorPoints },
+    //{ "ModifyArenaPoints", &LuaPlayer::ModifyArenaPoints },
 #endif
     { "LeaveBattleground", &LuaPlayer::LeaveBattleground },
     // {"BindToInstance", &LuaPlayer::BindToInstance},                                      // :BindToInstance() - UNDOCUMENTED - Binds the player to the current instance
@@ -717,7 +717,7 @@ ElunaRegister<Player> PlayerMethods[] =
 #endif
     { "KickPlayer", &LuaPlayer::KickPlayer },
     { "LogoutPlayer", &LuaPlayer::LogoutPlayer },
-    { "SendTrainerList", &LuaPlayer::SendTrainerList },
+    //{ "SendTrainerList", &LuaPlayer::SendTrainerList },
     { "SendListInventory", &LuaPlayer::SendListInventory },
     { "SendShowBank", &LuaPlayer::SendShowBank },
     { "SendTabardVendorActivate", &LuaPlayer::SendTabardVendorActivate },

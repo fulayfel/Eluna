@@ -165,7 +165,7 @@ namespace LuaGuild
         Player* player = Eluna::CHECKOBJ<Player>(L, 2);
 
 #if defined TRINITY || AZEROTHCORE
-        guild->HandleSetLeader(player->GetSession(), player->GetName());
+        guild->HandleSetNewGuildMaster(player->GetSession(), player->GetName());
 #else
         guild->SetLeader(player->GET_GUID());
 #endif

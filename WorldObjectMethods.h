@@ -42,7 +42,7 @@ namespace LuaWorldObject
      */
     int GetPhaseMask(lua_State* L, WorldObject* obj)
     {
-        Eluna::Push(L, obj->GetPhaseMask());
+        Eluna::Push(L, obj->GetDBPhase());
         return 1;
     }
 
@@ -56,7 +56,7 @@ namespace LuaWorldObject
     {
         uint32 phaseMask = Eluna::CHECKVAL<uint32>(L, 2);
         bool update = Eluna::CHECKVAL<bool>(L, 3, true);
-        obj->SetPhaseMask(phaseMask, update);
+        obj->SetDBPhase(phaseMask);
         return 0;
     }
 #endif
@@ -658,16 +658,6 @@ namespace LuaWorldObject
     int GetAngle(lua_State* L, WorldObject* obj)
     {
         WorldObject* target = Eluna::CHECKOBJ<WorldObject>(L, 2, false);
-#if defined TRINITY && !AZEROTHCORE
-        if (target)
-            Eluna::Push(L, obj->GetAbsoluteAngle(target));
-        else
-        {
-            float x = Eluna::CHECKVAL<float>(L, 2);
-            float y = Eluna::CHECKVAL<float>(L, 3);
-            Eluna::Push(L, obj->GetAbsoluteAngle(x, y));
-        }
-#else
         if (target)
             Eluna::Push(L, obj->GetAngle(target));
         else
@@ -676,7 +666,6 @@ namespace LuaWorldObject
             float y = Eluna::CHECKVAL<float>(L, 3);
             Eluna::Push(L, obj->GetAngle(x, y));
         }
-#endif
         return 1;
     }
 

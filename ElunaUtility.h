@@ -42,7 +42,7 @@ typedef QueryResult ElunaQuery;
 #define HIGHGUID_CONTAINER      HighGuid::Container
 #define HIGHGUID_DYNAMICOBJECT  HighGuid::DynamicObject
 #define HIGHGUID_CORPSE         HighGuid::Corpse
-#define HIGHGUID_MO_TRANSPORT   HighGuid::Mo_Transport
+//#define HIGHGUID_MO_TRANSPORT   HighGuid::No_Transport
 #define HIGHGUID_INSTANCE       HighGuid::Instance
 #define HIGHGUID_GROUP          HighGuid::Group
 #elif AZEROTHCORE

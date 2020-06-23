@@ -1236,7 +1236,7 @@ CreatureAI* Eluna::GetAI(Creature* creature)
     return NULL;
 }
 
-InstanceData* Eluna::GetInstanceData(Map* map)
+InstanceData* Eluna::GetInstanceData(InstanceMap* map)
 {
     if (!IsEnabled())
         return NULL;

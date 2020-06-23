@@ -195,11 +195,8 @@ namespace LuaGameObject
             go->SetGoState(GO_STATE_READY);
         else if (state == 2)
         {
-#ifdef TRINITY
-            go->SetGoState(GO_STATE_DESTROYED);
-#else
-            go->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
-#endif
+
+        go->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
         }
 
         return 0;

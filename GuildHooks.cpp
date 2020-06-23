@@ -70,7 +70,7 @@ void Eluna::OnDisband(Guild* guild)
     CallAllFunctions(GuildEventBindings, key);
 }
 
-void Eluna::OnMemberWitdrawMoney(Guild* guild, Player* player, uint32& amount, bool isRepair)
+void Eluna::OnMemberWitdrawMoney(Guild* guild, Player* player, uint64& amount, bool isRepair)
 {
     START_HOOK(GUILD_EVENT_ON_MONEY_WITHDRAW);
     Push(guild);
@@ -97,7 +97,7 @@ void Eluna::OnMemberWitdrawMoney(Guild* guild, Player* player, uint32& amount, b
     CleanUpStack(4);
 }
 
-void Eluna::OnMemberDepositMoney(Guild* guild, Player* player, uint32& amount)
+void Eluna::OnMemberDepositMoney(Guild* guild, Player* player, uint64& amount)
 {
     START_HOOK(GUILD_EVENT_ON_MONEY_DEPOSIT);
     Push(guild);

@@ -200,7 +200,7 @@ void Eluna::OnTalentsReset(Player* pPlayer, bool noCost)
     CallAllFunctions(PlayerEventBindings, key);
 }
 
-void Eluna::OnMoneyChanged(Player* pPlayer, int32& amount)
+void Eluna::OnMoneyChanged(Player* pPlayer, int64& amount)
 {
     START_HOOK(PLAYER_EVENT_ON_MONEY_CHANGE);
     Push(pPlayer);

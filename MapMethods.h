@@ -8,6 +8,7 @@
 #define MAPMETHODS_H
 
 #include "ElunaInstanceAI.h"
+#include "PhasingHandler.h"
 
 /***
  * A game map, e.g. Azeroth, Eastern Kingdoms, the Molten Core, etc.
@@ -110,7 +111,8 @@ namespace LuaMap
      * @param float x
      * @param float y
      * @return float z
-     */
+     **/
+
     int GetHeight(lua_State* L, Map* map)
     {
         float x = Eluna::CHECKVAL<float>(L, 2);
@@ -119,12 +121,13 @@ namespace LuaMap
         float z = map->GetHeight(x, y, MAX_HEIGHT);
 #else
         uint32 phasemask = Eluna::CHECKVAL<uint32>(L, 4, 1);
-        float z = map->GetHeight(phasemask, x, y, MAX_HEIGHT);
+        float z = map->GetHeight(PhasingHandler::GetEmptyPhaseShift(), x, y, MAX_HEIGHT);
 #endif
         if (z != INVALID_HEIGHT)
             Eluna::Push(L, z);
         return 1;
     }
+
 
     /**
      * Returns the difficulty of the [Map].
@@ -191,7 +194,7 @@ namespace LuaMap
         float z = Eluna::CHECKVAL<float>(L, 4);
 
 #if defined TRINITY || AZEROTHCORE
-        Eluna::Push(L, map->GetAreaId(x, y, z));
+        Eluna::Push(L, map->GetAreaId(PhasingHandler::GetEmptyPhaseShift(),x, y, z));
 #else
         Eluna::Push(L, map->GetTerrain()->GetAreaId(x, y, z));
 #endif
@@ -218,7 +221,7 @@ namespace LuaMap
 #endif // !AZEROTHCORE
                 break;
             case HIGHGUID_TRANSPORT:
-            case HIGHGUID_MO_TRANSPORT:
+            //case HIGHGUID_MO_TRANSPORT:
             case HIGHGUID_GAMEOBJECT:
                 Eluna::Push(L, map->GetGameObject(ObjectGuid(guid)));
                 break;

@@ -339,7 +339,7 @@ public:
     static ElunaObject* CHECKTYPE(lua_State* luastate, int narg, const char *tname, bool error = true);
 
     CreatureAI* GetAI(Creature* creature);
-    InstanceData* GetInstanceData(Map* map);
+	InstanceData* GetInstanceData(InstanceMap* map);
     void FreeInstanceId(uint32 instanceId);
 
     /* Custom */
@@ -438,7 +438,7 @@ public:
     void OnLevelChanged(Player* pPlayer, uint8 oldLevel);
     void OnFreeTalentPointsChanged(Player* pPlayer, uint32 newPoints);
     void OnTalentsReset(Player* pPlayer, bool noCost);
-    void OnMoneyChanged(Player* pPlayer, int32& amount);
+    void OnMoneyChanged(Player* pPlayer, int64& amount);
     void OnGiveXP(Player* pPlayer, uint32& amount, Unit* pVictim);
     void OnReputationChange(Player* pPlayer, uint32 factionID, int32& standing, bool incremental);
     void OnDuelRequest(Player* pTarget, Player* pChallenger);
@@ -492,8 +492,8 @@ public:
     void OnInfoChanged(Guild* guild, const std::string& newInfo);
     void OnCreate(Guild* guild, Player* leader, const std::string& name);
     void OnDisband(Guild* guild);
-    void OnMemberWitdrawMoney(Guild* guild, Player* player, uint32& amount, bool isRepair);
-    void OnMemberDepositMoney(Guild* guild, Player* player, uint32& amount);
+    void OnMemberWitdrawMoney(Guild* guild, Player* player, uint64& amount, bool isRepair);
+	void OnMemberDepositMoney(Guild* guild, Player* player, uint64& amount);
     void OnItemMove(Guild* guild, Player* player, Item* pItem, bool isSrcBank, uint8 srcContainer, uint8 srcSlotId, bool isDestBank, uint8 destContainer, uint8 destSlotId);
     void OnEvent(Guild* guild, uint8 eventType, uint32 playerGuid1, uint32 playerGuid2, uint8 newRank);
     void OnBankEvent(Guild* guild, uint8 eventType, uint8 tabId, uint32 playerGuid, uint32 itemOrMoney, uint16 itemStackCount, uint8 destTabId);

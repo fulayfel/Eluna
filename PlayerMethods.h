@@ -795,7 +795,7 @@ namespace LuaPlayer
      */
     int GetPhaseMaskForSpawn(lua_State* L, Player* player)
     {
-        Eluna::Push(L, player->GetPhaseMaskForSpawn());
+        Eluna::Push(L, player->GetDBPhase());
         return 1;
     }
 #endif
@@ -805,23 +805,25 @@ namespace LuaPlayer
      * Returns the [Player]s current amount of Arena Points
      *
      * @return uint32 arenaPoints
-     */
+    
     int GetArenaPoints(lua_State* L, Player* player)
     {
-        Eluna::Push(L, player->GetArenaPoints());
+        Eluna::Push(L, player->GetCurrency());
         return 1;
     }
+     */
 
     /**
      * Returns the [Player]s current amount of Honor Points
      *
      * @return uint32 honorPoints
-     */
+     
     int GetHonorPoints(lua_State* L, Player* player)
     {
         Eluna::Push(L, player->GetHonorPoints());
         return 1;
     }
+    */
 #endif
 #if defined(CLASSIC) || defined(TBC) || defined (WOTLK)
     /**
@@ -831,7 +833,7 @@ namespace LuaPlayer
      */
     int GetShieldBlockValue(lua_State* L, Player* player)
     {
-        Eluna::Push(L, player->GetShieldBlockValue());
+        Eluna::Push(L, player->GetUnitBlockChance());
         return 1;
     }
 #endif
@@ -1927,31 +1929,6 @@ namespace LuaPlayer
         return 0;
     }
 
-#if defined(TBC) || defined(WOTLK)
-    /**
-     * Sets the [Player]s Arena Points to the amount specified
-     *
-     * @param uint32 arenaPoints
-     */
-    int SetArenaPoints(lua_State* L, Player* player)
-    {
-        uint32 arenaP = Eluna::CHECKVAL<uint32>(L, 2);
-        player->SetArenaPoints(arenaP);
-        return 0;
-    }
-
-    /**
-     * Sets the [Player]s Honor Points to the amount specified
-     *
-     * @param uint32 honorPoints
-     */
-    int SetHonorPoints(lua_State* L, Player* player)
-    {
-        uint32 honorP = Eluna::CHECKVAL<uint32>(L, 2);
-        player->SetHonorPoints(honorP);
-        return 0;
-    }
-#endif
 
 #ifdef CLASSIC
     /**
@@ -2141,7 +2118,7 @@ namespace LuaPlayer
      * Adds or detracts from the [Player]s current Arena Points
      *
      * @param int32 amount
-     */
+     
     int ModifyArenaPoints(lua_State* L, Player* player)
     {
         int32 amount = Eluna::CHECKVAL<int32>(L, 2);
@@ -2149,12 +2126,13 @@ namespace LuaPlayer
         player->ModifyArenaPoints(amount);
         return 0;
     }
+    */
 
     /**
      * Adds or detracts from the [Player]s current Honor Points
      *
      * @param int32 amount
-     */
+     
     int ModifyHonorPoints(lua_State* L, Player* player)
     {
         int32 amount = Eluna::CHECKVAL<int32>(L, 2);
@@ -2162,6 +2140,7 @@ namespace LuaPlayer
         player->ModifyHonorPoints(amount);
         return 0;
     }
+    */
 #endif
 
     /**
@@ -2268,7 +2247,7 @@ namespace LuaPlayer
 #else
         data << uint64(unit->GetGUIDLow());
 #endif
-        data << uint32(ahEntry->houseId);
+        data << uint32(ahEntry->ID);
         data << uint8(1);
 #ifdef CMANGOS
         player->GetSession()->SendPacket(data);
@@ -2343,18 +2322,19 @@ namespace LuaPlayer
      * Sends a trainer window to the [Player] from the [Creature] specified
      *
      * @param [Creature] sender
-     */
+
     int SendTrainerList(lua_State* L, Player* player)
     {
         Creature* obj = Eluna::CHECKOBJ<Creature>(L, 2);
-
+        Trainer::Trainer const* trainer = sObjectMgr->GetTrainer(obj->GetEntry());
 #ifdef TRINITY
-        player->GetSession()->SendTrainerList(obj);
+        player->GetSession()->SendTrainerList(obj, );
 #else
         player->GetSession()->SendTrainerList(obj->GET_GUID());
 #endif
         return 0;
     }
+         */
 
     /**
      * Sends a guild invitation from the [Player]s [Guild] to the [Player] object specified
@@ -2933,7 +2913,7 @@ namespace LuaPlayer
      * Tries to add the given quest entry for the [Player].
      *
      * @param uint32 entry : quest entry
-     */
+
     int AddQuest(lua_State* L, Player* player)
     {
         uint32 entry = Eluna::CHECKVAL<uint32>(L, 2);
@@ -2988,7 +2968,7 @@ namespace LuaPlayer
 
         return 0;
     }
-
+         */
     /**
      * Removes the given quest entry from the [Player].
      *
@@ -3635,11 +3615,7 @@ namespace LuaPlayer
      */
     int KickPlayer(lua_State* /*L*/, Player* player)
     {
-#ifdef TRINITY
-        player->GetSession()->KickPlayer("PlayerMethods::KickPlayer Kick the player");
-#else
         player->GetSession()->KickPlayer();
-#endif
         return 0;
     }
 
@@ -3893,7 +3869,7 @@ namespace LuaPlayer
         if (!quest)
             return 0;
 
-        player->PlayerTalkClass->SendQuestGiverQuestDetails(quest, player->GET_GUID(), activateAccept);
+        player->PlayerTalkClass->SendQuestGiverQuestDetails(quest, player->GET_GUID(), activateAccept, false);
         return 0;
     }
 

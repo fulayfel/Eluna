@@ -2686,7 +2686,7 @@ namespace LuaUnit
             damage = Unit::CalcArmorReducedDamage(unit, target, damage, NULL, BASE_ATTACK);
 #else TRINITY
         if (schoolmask & SPELL_SCHOOL_MASK_NORMAL)
-            damage = unit->CalcArmorReducedDamage(target, damage);
+            damage = unit->CalcArmorReducedDamage(target, damage, NULL, BASE_ATTACK);
 #endif
 
 #ifdef TRINITY
@@ -2717,7 +2717,7 @@ namespace LuaUnit
             return 0;
 
         SpellNonMeleeDamage dmgInfo(unit, target, spell, spellInfo->GetSchoolMask());
-        damage = unit->SpellDamageBonusDone(target, spellInfo, damage, SPELL_DIRECT_DAMAGE;
+        damage = unit->SpellDamageBonusDone(target, spellInfo, damage, SPELL_DIRECT_DAMAGE, EFFECT_0);
         damage = target->SpellDamageBonusTaken(unit, spellInfo, damage, SPELL_DIRECT_DAMAGE);
         unit->CalculateSpellDamageTaken(&dmgInfo, damage, spellInfo);
         unit->DealDamageMods(dmgInfo.target, dmgInfo.damage, &dmgInfo.absorb);
