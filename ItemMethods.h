@@ -195,29 +195,16 @@ namespace LuaItem
         return 1;
     }
 
-#if defined CLASSIC || defined(TBC) || defined(WOTLK)
     /**
-     * Returns 'true' if the [Item] is a weapon vellum, 'false' otherwise
+     * Returns 'true' if the [Item] is a vellum, 'false' otherwise
      *
      * @return bool isWeaponVellum
      */
-    int IsWeaponVellum(lua_State* L, Item* item)
+    int IsVellum(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->IsWeaponVellum());
+        Eluna::Push(L, item->IsVellum());
         return 1;
     }
-
-    /**
-     * Returns 'true' if the [Item] is an armor vellum, 'false' otherwise
-     *
-     * @return bool isArmorVellum
-     */
-    int IsArmorVellum(lua_State* L, Item* item)
-    {
-        Eluna::Push(L, item->IsArmorVellum());
-        return 1;
-    }
-#endif
 
     /**
      * Returns 'true' if the [Item] is a conjured consumable, 'false' otherwise
@@ -264,9 +251,7 @@ namespace LuaItem
             return luaL_argerror(L, 2, "valid LocaleConstant expected");
 
         const ItemTemplate* temp = item->GetTemplate();
-        std::string name = temp->Name1;
-        if (ItemLocale const* il = eObjectMgr->GetItemLocale(temp->ItemId))
-            ObjectMgr::GetLocaleString(il->Name, static_cast<LocaleConstant>(locale), name);
+        std::string name = temp->GetDefaultLocaleName();
 
 #ifndef CLASSIC
         if (int32 itemRandPropId = item->GetItemRandomPropertyId())
@@ -274,31 +259,31 @@ namespace LuaItem
 #if defined(CATA) || defined (MISTS)
             char* suffix = NULL;
 #else
-            char* const* suffix = NULL;
+            char* suffix = NULL;
 #endif
             if (itemRandPropId < 0)
             {
                 const ItemRandomSuffixEntry* itemRandEntry = sItemRandomSuffixStore.LookupEntry(-item->GetItemRandomPropertyId());
                 if (itemRandEntry)
-                    suffix = itemRandEntry->nameSuffix;
+                    suffix = itemRandEntry->Name;
             }
             else
             {
                 const ItemRandomPropertiesEntry* itemRandEntry = sItemRandomPropertiesStore.LookupEntry(item->GetItemRandomPropertyId());
                 if (itemRandEntry)
-                    suffix = itemRandEntry->nameSuffix;
+                    suffix = itemRandEntry->Name;
             }
             if (suffix)
             {
                 name += ' ';
-                name += suffix[(name != temp->Name1) ? locale : uint8(DEFAULT_LOCALE)];
+                name += suffix[(name != temp->GetDefaultLocaleName()) ? locale : uint8(DEFAULT_LOCALE)];
             }
         }
 #endif
 
         std::ostringstream oss;
-        oss << "|c" << std::hex << ItemQualityColors[temp->Quality] << std::dec <<
-            "|Hitem:" << temp->ItemId << ":" <<
+        oss << "|c" << std::hex << ItemQualityColors[temp->GetQuality()] << std::dec <<
+            "|Hitem:" << temp->GetId() << ":" <<
             item->GetEnchantmentId(PERM_ENCHANTMENT_SLOT) << ":" <<
 #ifndef CLASSIC
             item->GetEnchantmentId(SOCK_ENCHANTMENT_SLOT) << ":" <<
@@ -308,7 +293,7 @@ namespace LuaItem
 #endif
             item->GetItemRandomPropertyId() << ":" << item->GetItemSuffixFactor() << ":" <<
 #ifdef TRINITY
-            (uint32)item->GetOwner()->GetLevel() << "|h[" << name << "]|h|r";
+            (uint32)item->GetOwner()->getLevel() << "|h[" << name << "]|h|r";
 #else
             (uint32)item->GetOwner()->getLevel() << "|h[" << name << "]|h|r";
 #endif
@@ -411,7 +396,7 @@ namespace LuaItem
         if (index >= MAX_ITEM_PROTO_SPELLS)
             return luaL_argerror(L, 2, "valid SpellIndex expected");
 
-        Eluna::Push(L, item->GetTemplate()->Spells[index].SpellId);
+        Eluna::Push(L, item->GetTemplate()->GetSpellId(index));
         return 1;
     }
 
@@ -427,7 +412,7 @@ namespace LuaItem
         if (index >= MAX_ITEM_PROTO_SPELLS)
             return luaL_argerror(L, 2, "valid SpellIndex expected");
 
-        Eluna::Push(L, item->GetTemplate()->Spells[index].SpellTrigger);
+        Eluna::Push(L, item->GetTemplate()->GetSpellTrigger(index));
         return 1;
     }
 
@@ -438,7 +423,7 @@ namespace LuaItem
      */
     int GetClass(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->Class);
+        Eluna::Push(L, item->GetTemplate()->GetClass());
         return 1;
     }
 
@@ -449,7 +434,7 @@ namespace LuaItem
      */
     int GetSubClass(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->SubClass);
+        Eluna::Push(L, item->GetTemplate()->GetSubClass());
         return 1;
     }
 
@@ -460,7 +445,7 @@ namespace LuaItem
      */
     int GetName(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->Name1);
+        Eluna::Push(L, item->GetTemplate()->GetDefaultLocaleName());
         return 1;
     }
 
@@ -471,7 +456,7 @@ namespace LuaItem
      */
     int GetDisplayId(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->DisplayInfoID);
+        Eluna::Push(L, item->GetTemplate()->GetDisplayID());
         return 1;
     }
 
@@ -482,7 +467,7 @@ namespace LuaItem
      */
     int GetQuality(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->Quality);
+        Eluna::Push(L, item->GetTemplate()->GetQuality());
         return 1;
     }
 
@@ -493,7 +478,7 @@ namespace LuaItem
      */
     int GetBuyCount(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->BuyCount);
+        Eluna::Push(L, item->GetTemplate()->GetBuyCount());
         return 1;
     }
 
@@ -504,7 +489,7 @@ namespace LuaItem
      */
     int GetBuyPrice(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->BuyPrice);
+        Eluna::Push(L, item->GetTemplate()->GetBuyPrice());
         return 1;
     }
 
@@ -515,7 +500,7 @@ namespace LuaItem
      */
     int GetSellPrice(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->SellPrice);
+        Eluna::Push(L, item->GetTemplate()->GetSellPrice());
         return 1;
     }
 
@@ -526,7 +511,7 @@ namespace LuaItem
      */
     int GetInventoryType(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->InventoryType);
+        Eluna::Push(L, item->GetTemplate()->GetInventoryType());
         return 1;
     }
 
@@ -537,7 +522,7 @@ namespace LuaItem
      */
     int GetAllowableClass(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->AllowableClass);
+        Eluna::Push(L, item->GetTemplate()->GetAllowableClass());
         return 1;
     }
 
@@ -548,7 +533,7 @@ namespace LuaItem
      */
     int GetAllowableRace(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->AllowableRace);
+        Eluna::Push(L, item->GetTemplate()->GetAllowableRace());
         return 1;
     }
 
@@ -559,7 +544,7 @@ namespace LuaItem
      */
     int GetItemLevel(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->ItemLevel);
+        Eluna::Push(L, item->GetTemplate()->GetBaseItemLevel());
         return 1;
     }
 
@@ -570,10 +555,11 @@ namespace LuaItem
      */
     int GetRequiredLevel(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->RequiredLevel);
+        Eluna::Push(L, item->GetTemplate()->GetRequiredLevel());
         return 1;
     }
 
+/*
 #ifdef WOTLK
     int GetStatsCount(lua_State* L, Item* item)
     {
@@ -581,6 +567,7 @@ namespace LuaItem
         return 1;
     }
 #endif
+*/
 
     /**
      * Returns the random property ID of this [Item]
@@ -589,10 +576,11 @@ namespace LuaItem
      */
     int GetRandomProperty(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->RandomProperty);
+        Eluna::Push(L, item->GetTemplate()->GetRandomProperty());
         return 1;
     }
 
+/*
 #ifndef CLASSIC
     int GetRandomSuffix(lua_State* L, Item* item)
     {
@@ -600,6 +588,7 @@ namespace LuaItem
         return 1;
     }
 #endif
+*/
 
     /**
      * Returns the item set ID of this [Item]
@@ -608,7 +597,7 @@ namespace LuaItem
      */
     int GetItemSet(lua_State* L, Item* item)
     {
-        Eluna::Push(L, item->GetTemplate()->ItemSet);
+        Eluna::Push(L, item->GetTemplate()->GetItemSet());
         return 1;
     }
 

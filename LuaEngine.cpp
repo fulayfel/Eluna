@@ -1255,7 +1255,7 @@ InstanceData* Eluna::GetInstanceData(Map* map)
     return NULL;
 }
 
-bool Eluna::HasInstanceData(Map const* map)
+bool Eluna::HasInstanceData(InstanceMap* map)
 {
     if (!map->Instanceable())
         return continentDataRefs.find(map->GetId()) != continentDataRefs.end();

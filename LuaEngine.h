@@ -20,6 +20,7 @@
 #include "World.h"
 #include "Hooks.h"
 #include "ElunaUtility.h"
+#include "Map.h"
 #include <mutex>
 #include <memory>
 
@@ -297,7 +298,7 @@ public:
     /*
      * Returns `true` if Eluna has instance data for `map`.
      */
-    bool HasInstanceData(Map const* map);
+    bool HasInstanceData(InstanceMap* map);
 
     /*
      * Use the top element of the stack as the instance data table for `map`,

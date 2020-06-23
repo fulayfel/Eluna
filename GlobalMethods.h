@@ -394,12 +394,10 @@ namespace LuaGlobalFunctions
         if (!temp)
             return luaL_argerror(L, 1, "valid ItemEntry expected");
 
-        std::string name = temp->Name1;
-        if (ItemLocale const* il = eObjectMgr->GetItemLocale(entry))
-            ObjectMgr::GetLocaleString(il->Name, static_cast<LocaleConstant>(locale), name);
+        std::string name = temp->GetDefaultLocaleName();
 
         std::ostringstream oss;
-        oss << "|c" << std::hex << ItemQualityColors[temp->Quality] << std::dec <<
+        oss << "|c" << std::hex << ItemQualityColors[temp->GetQuality()] << std::dec <<
             "|Hitem:" << entry << ":0:" <<
 #ifndef CLASSIC
             "0:0:0:0:" <<
@@ -477,7 +475,7 @@ namespace LuaGlobalFunctions
         if (!areaEntry)
             return luaL_argerror(L, 1, "valid Area or Zone ID expected");
 
-        Eluna::Push(L, areaEntry->area_name[locale]);
+        Eluna::Push(L, areaEntry->AreaName);
         return 1;
     }
 
@@ -1681,8 +1679,8 @@ namespace LuaGlobalFunctions
             if (save)
             {
                 Creature* creature = new Creature();
-#ifndef AZEROTHCORE
-                if (!creature->Create(map->GenerateLowGuid<HighGuid::Unit>(), map, phase, entry, pos))
+#ifndef AZEROTHCORE || TRINITY
+                if (!creature->Create(map->GenerateLowGuid<HighGuid::Unit>(), map, entry, pos))
 #else
                 if (!creature->Create(sObjectMgr->GenerateLowGuid(HIGHGUID_UNIT), map, phase, entry, 0, x, y, z, o))
 #endif
@@ -1692,9 +1690,9 @@ namespace LuaGlobalFunctions
                     return 1;
                 }
 
-                creature->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()), phase);
+                creature->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()));
 
-#ifndef AZEROTHCORE
+#ifndef AZEROTHCORE || TRINITY
                 uint32 db_guid = creature->GetSpawnId();
 #else
                 uint32 db_guid = creature->GetDBTableGUIDLow();
@@ -1704,7 +1702,7 @@ namespace LuaGlobalFunctions
                 creature->CleanupsBeforeDelete();
                 delete creature;
                 creature = new Creature();
-#ifndef AZEROTHCORE
+#ifndef AZEROTHCORE || TRINITY
                 if (!creature->LoadFromDB(db_guid, map, true, true))
 #else
                 if (!creature->LoadFromDB(db_guid, map))
@@ -1757,7 +1755,7 @@ namespace LuaGlobalFunctions
 #ifndef AZEROTHCORE
             uint32 guidLow = map->GenerateLowGuid<HighGuid::GameObject>();
             QuaternionData rot = QuaternionData::fromEulerAnglesZYX(o, 0.f, 0.f);
-            if (!object->Create(guidLow, objectInfo->entry, map, phase, Position(x, y, z, o), rot, 0, GO_STATE_READY))
+            if (!object->Create(guidLow, objectInfo->entry, map, Position(x, y, z, o), rot, 0, GO_STATE_READY))
 #else
             uint32 guidLow = sObjectMgr->GenerateLowGuid(HIGHGUID_GAMEOBJECT);
             if (!object->Create(guidLow, entry, map, phase, x, y, z, o, G3D::Quat(0.0f, 0.0f, 0.0f, 0.0f), 100, GO_STATE_READY))
@@ -1774,7 +1772,7 @@ namespace LuaGlobalFunctions
             if (save)
             {
                 // fill the gameobject data and save to the db
-                object->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()), phase);
+                object->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()));
 #ifndef AZEROTHCORE
                 guidLow = object->GetSpawnId();
 #else
@@ -1848,16 +1846,11 @@ namespace LuaGlobalFunctions
         uint32 incrtime = Eluna::CHECKVAL<uint32>(L, 4);
         uint32 extendedcost = Eluna::CHECKVAL<uint32>(L, 5);
 
-#if defined TRINITY || AZEROTHCORE
-#ifdef CATA
+#if defined TRINITY
+
         if (!eObjectMgr->IsVendorItemValid(entry, item, maxcount, incrtime, extendedcost, 1))
             return 0;
         eObjectMgr->AddVendorItem(entry, item, maxcount, incrtime, extendedcost, 1);
-#else
-        if (!eObjectMgr->IsVendorItemValid(entry, item, maxcount, incrtime, extendedcost))
-            return 0;
-        eObjectMgr->AddVendorItem(entry, item, maxcount, incrtime, extendedcost);
-#endif
 #else
         if (!eObjectMgr->IsVendorItemValid(false, "npc_vendor", entry, item, maxcount, incrtime, extendedcost, 0))
             return 0;
@@ -1883,11 +1876,8 @@ namespace LuaGlobalFunctions
         if (!eObjectMgr->GetCreatureTemplate(entry))
             return luaL_argerror(L, 1, "valid CreatureEntry expected");
 
-#if defined(CATA) || defined(MISTS)
         eObjectMgr->RemoveVendorItem(entry, item, 1);
-#else
-        eObjectMgr->RemoveVendorItem(entry, item);
-#endif
+
         return 0;
     }
 
@@ -1906,14 +1896,10 @@ namespace LuaGlobalFunctions
 
         auto const itemlist = items->m_items;
         for (auto itr = itemlist.begin(); itr != itemlist.end(); ++itr)
-#if defined(CATA) || defined(MISTS)
-            eObjectMgr->RemoveVendorItem(entry, (*itr)->item, 1);
-#else
 #ifdef TRINITY
-            eObjectMgr->RemoveVendorItem(entry, itr->item);
+            eObjectMgr->RemoveVendorItem(entry, itr->item, 1);
 #else
             eObjectMgr->RemoveVendorItem(entry, (*itr)->item);
-#endif
 #endif
         return 0;
     }
@@ -1926,11 +1912,7 @@ namespace LuaGlobalFunctions
     int Kick(lua_State* L)
     {
         Player* player = Eluna::CHECKOBJ<Player>(L, 1);
-#ifdef TRINITY
-        player->GetSession()->KickPlayer("GlobalMethods::Kick Kick the player");
-#else
         player->GetSession()->KickPlayer();
-#endif
         return 0;
     }
 
@@ -2119,7 +2101,7 @@ namespace LuaGlobalFunctions
                 luaL_error(L, "Item entry %d does not exist", entry);
                 continue;
             }
-            if (amount < 1 || (item_proto->MaxCount > 0 && amount > uint32(item_proto->MaxCount)))
+            if (amount < 1 || (item_proto->GetMaxCount() > 0 && amount > uint32(item_proto->GetMaxCount())))
             {
                 luaL_error(L, "Item entry %d has invalid amount %d", entry, amount);
                 continue;
@@ -2300,10 +2282,10 @@ namespace LuaGlobalFunctions
             TaxiPathNodeEntry entry;
 #ifdef TRINITY
             // mandatory
-            entry.MapID = Eluna::CHECKVAL<uint32>(L, start);
-            entry.LocX = Eluna::CHECKVAL<float>(L, start + 1);
-            entry.LocY = Eluna::CHECKVAL<float>(L, start + 2);
-            entry.LocZ = Eluna::CHECKVAL<float>(L, start + 3);
+            entry.ContinentID = Eluna::CHECKVAL<uint32>(L, start);
+            entry.Loc.X = Eluna::CHECKVAL<float>(L, start + 1);
+            entry.Loc.Y = Eluna::CHECKVAL<float>(L, start + 2);
+            entry.Loc.Z = Eluna::CHECKVAL<float>(L, start + 3);
             // optional
             entry.Flags = Eluna::CHECKVAL<uint32>(L, start + 4, 0);
             entry.Delay = Eluna::CHECKVAL<uint32>(L, start + 5, 0);
@@ -2351,10 +2333,10 @@ namespace LuaGlobalFunctions
             entry.PathID = pathId;
             entry.NodeIndex = nodeId;
             nodeEntry->ID = index;
-            nodeEntry->map_id = entry.MapID;
-            nodeEntry->x = entry.LocX;
-            nodeEntry->y = entry.LocY;
-            nodeEntry->z = entry.LocZ;
+            nodeEntry->ContinentID = entry.ContinentID;
+            nodeEntry->Pos.X = entry.Loc.X;
+            nodeEntry->Pos.Y = entry.Loc.Y;
+            nodeEntry->Pos.Z = entry.Loc.Z;
             nodeEntry->MountCreatureID[0] = mountH;
             nodeEntry->MountCreatureID[1] = mountA;
             sTaxiNodesStore.SetEntry(nodeId++, nodeEntry);
@@ -2381,10 +2363,10 @@ namespace LuaGlobalFunctions
             return 1;
         sTaxiPathSetBySource[startNode][nodeId - 1] = TaxiPathBySourceAndDestination(pathId, price);
         TaxiPathEntry* pathEntry = new TaxiPathEntry();
-        pathEntry->from = startNode;
-        pathEntry->to = nodeId - 1;
+        pathEntry->FromTaxiNode = startNode;
+        pathEntry->ToTaxiNode = nodeId - 1;
         pathEntry->ID = pathId;
-        pathEntry->price = price;
+        pathEntry->Cost = price;
         sTaxiPathStore.SetEntry(pathId, pathEntry);
         Eluna::Push(L, pathId);
         return 1;

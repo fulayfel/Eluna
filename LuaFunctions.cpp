@@ -916,13 +916,7 @@ ElunaRegister<Item> ItemMethods[] =
     { "GetAllowableRace", &LuaItem::GetAllowableRace },
     { "GetItemLevel", &LuaItem::GetItemLevel },
     { "GetRequiredLevel", &LuaItem::GetRequiredLevel },
-#ifdef WOTLK
-    { "GetStatsCount", &LuaItem::GetStatsCount },
-#endif
     { "GetRandomProperty", &LuaItem::GetRandomProperty },
-#ifndef CLASSIC
-    { "GetRandomSuffix", &LuaItem::GetRandomSuffix },
-#endif
     { "GetItemSet", &LuaItem::GetItemSet },
     { "GetBagSize", &LuaItem::GetBagSize },
 
@@ -951,10 +945,8 @@ ElunaRegister<Item> ItemMethods[] =
     { "IsEquipped", &LuaItem::IsEquipped },
     { "HasQuest", &LuaItem::HasQuest },
     { "IsPotion", &LuaItem::IsPotion },
-#if defined(CLASSIC) || defined(TBC) || defined(WOTLK)
-    { "IsWeaponVellum", &LuaItem::IsWeaponVellum },
-    { "IsArmorVellum", &LuaItem::IsArmorVellum },
-#endif
+    { "IsVellum", &LuaItem::IsVellum },
+
     { "IsConjuredConsumable", &LuaItem::IsConjuredConsumable },
     //{"IsRefundExpired", &LuaItem::IsRefundExpired},               // :IsRefundExpired() - UNDOCUMENTED - Returns true if the item's refund time has expired
     { "SetEnchantment", &LuaItem::SetEnchantment },
