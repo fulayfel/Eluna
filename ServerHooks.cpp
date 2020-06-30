@@ -30,34 +30,17 @@ using namespace Hooks;
         return RETVAL;\
     LOCK_ELUNA
 
-bool Eluna::OnAddonMessage(Player* sender, uint32 type, std::string& msg, Player* receiver, Guild* guild, Group* group, Channel* channel)
+bool Eluna::OnAddonMessage(Player* sender, uint32 type, std::string& prefix, std::string& msg, Player* receiver)
 {
     START_HOOK_WITH_RETVAL(ADDON_EVENT_ON_MESSAGE, true);
+    TC_LOG_DEBUG("custom.AIO", "prefix: %s\nmsg: %s\ntype: %u\nsender: %s\nreceiver: %s", prefix, msg, type, sender->GetName(), receiver->GetName());
     Push(sender);
     Push(type);
-
-    auto delimeter_position = msg.find('\t');
-    if (delimeter_position == std::string::npos)
-    {
-        Push(msg); // prefix
-        Push(); // msg
-    }
-    else
-    {
-        std::string prefix = msg.substr(0, delimeter_position);
-        std::string content = msg.substr(delimeter_position + 1, std::string::npos);
-        Push(prefix);
-        Push(content);
-    }
+    Push(prefix);
+    Push(msg);
 
     if (receiver)
         Push(receiver);
-    else if (guild)
-        Push(guild);
-    else if (group)
-        Push(group);
-    else if (channel)
-        Push(channel->GetChannelId());
     else
         Push();
 

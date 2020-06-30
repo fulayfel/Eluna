@@ -4,6 +4,7 @@
 * Please see the included DOCS/LICENSE.md for more information
 */
 
+#include <Chat.h>
 #ifndef PLAYERMETHODS_H
 #define PLAYERMETHODS_H
 
@@ -3589,24 +3590,10 @@ namespace LuaPlayer
         uint8 channel = Eluna::CHECKVAL<uint8>(L, 4);
         Player* receiver = Eluna::CHECKOBJ<Player>(L, 5);
 
-        std::string fullmsg = prefix + "\t" + message;
+        WorldPacket data;
+        ChatHandler::BuildChatPacket(data, ChatMsg(channel), LANG_ADDON, player->GET_GUID(), receiver->GET_GUID(), message, player->GetChatTag(), player->GetName(), receiver->GetName(), 0, false, "", prefix);
 
-        WorldPacket data(SMSG_MESSAGECHAT, 100);
-        data << uint8(channel);
-        data << int32(LANG_ADDON);
-        data << uint64(player->GET_GUID());
-#ifndef CLASSIC
-        data << uint32(0);
-        data << uint64(receiver->GET_GUID());
-#endif
-        data << uint32(fullmsg.length() + 1);
-        data << fullmsg;
-        data << uint8(0);
-#ifdef CMANGOS
-        receiver->GetSession()->SendPacket(data);
-#else
         receiver->GetSession()->SendPacket(&data);
-#endif
         return 0;
     }
 

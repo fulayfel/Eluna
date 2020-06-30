@@ -1679,11 +1679,7 @@ namespace LuaGlobalFunctions
             if (save)
             {
                 Creature* creature = new Creature();
-#ifndef AZEROTHCORE || TRINITY
                 if (!creature->Create(map->GenerateLowGuid<HighGuid::Unit>(), map, entry, pos))
-#else
-                if (!creature->Create(sObjectMgr->GenerateLowGuid(HIGHGUID_UNIT), map, phase, entry, 0, x, y, z, o))
-#endif
                 {
                     delete creature;
                     Eluna::Push(L);
@@ -1692,21 +1688,13 @@ namespace LuaGlobalFunctions
 
                 creature->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()));
 
-#ifndef AZEROTHCORE || TRINITY
                 uint32 db_guid = creature->GetSpawnId();
-#else
-                uint32 db_guid = creature->GetDBTableGUIDLow();
-#endif
                 // To call _LoadGoods(); _LoadQuests(); CreateTrainerSpells()
                 // current "creature" variable is deleted and created fresh new, otherwise old values might trigger asserts or cause undefined behavior
                 creature->CleanupsBeforeDelete();
                 delete creature;
                 creature = new Creature();
-#ifndef AZEROTHCORE || TRINITY
                 if (!creature->LoadFromDB(db_guid, map, true, true))
-#else
-                if (!creature->LoadFromDB(db_guid, map))
-#endif
                 {
                     delete creature;
                     Eluna::Push(L);

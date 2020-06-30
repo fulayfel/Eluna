@@ -357,7 +357,7 @@ public:
     InventoryResult OnCanUseItem(const Player* pPlayer, uint32 itemEntry);
     void OnLuaStateClose();
     void OnLuaStateOpen();
-    bool OnAddonMessage(Player* sender, uint32 type, std::string& msg, Player* receiver, Guild* guild, Group* group, Channel* channel);
+    bool OnAddonMessage(Player* sender, uint32 type, std::string& prefix, std::string& msg, Player* receiver);
 
     /* Item */
     void OnDummyEffect(WorldObject* pCaster, uint32 spellId, SpellEffIndex effIndex, Item* pTarget);
