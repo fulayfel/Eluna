@@ -33,7 +33,6 @@ using namespace Hooks;
 bool Eluna::OnAddonMessage(Player* sender, uint32 type, std::string& prefix, std::string& msg, Player* receiver)
 {
     START_HOOK_WITH_RETVAL(ADDON_EVENT_ON_MESSAGE, true);
-    TC_LOG_DEBUG("custom.AIO", "prefix: %s\nmsg: %s\ntype: %u\nsender: %s\nreceiver: %s", prefix, msg, type, sender->GetName(), receiver->GetName());
     Push(sender);
     Push(type);
     Push(prefix);
