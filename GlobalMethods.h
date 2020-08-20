@@ -181,7 +181,7 @@ namespace LuaGlobalFunctions
 #else
         {
 #ifdef TRINITY
-            boost::shared_lock<boost::shared_mutex> lock(*HashMapHolder<Player>::GetLock());
+            boost::shared_lock<std::shared_mutex> lock(*HashMapHolder<Player>::GetLock());
 #elif defined(AZEROTHCORE)
             ACORE_READ_GUARD(HashMapHolder<Player>::LockType, *HashMapHolder<Player>::GetLock());
 #else
@@ -1822,23 +1822,26 @@ namespace LuaGlobalFunctions
      *
      * @param uint32 entry : [Creature] entry Id
      * @param uint32 item : [Item] entry Id
-     * @param int32 maxcount : max [Item] stack count
+     * @param uint32 maxcount : max [Item] stack count
      * @param uint32 incrtime : combined with maxcount, incrtime tells how often (in seconds) the vendor list is refreshed and the limited [Item] copies are restocked
      * @param uint32 extendedcost : unique cost of an [Item], such as conquest points for example
+     * @param uint8 type : the type of the [Item]
      */
     int AddVendorItem(lua_State* L)
     {
         uint32 entry = Eluna::CHECKVAL<uint32>(L, 1);
         uint32 item = Eluna::CHECKVAL<uint32>(L, 2);
-        int maxcount = Eluna::CHECKVAL<int>(L, 3);
+        uint32 maxcount = Eluna::CHECKVAL<int>(L, 3);
         uint32 incrtime = Eluna::CHECKVAL<uint32>(L, 4);
         uint32 extendedcost = Eluna::CHECKVAL<uint32>(L, 5);
+        uint8 type = Eluna::CHECKVAL<uint8>(L, 6);
 
 #if defined TRINITY
-
-        if (!eObjectMgr->IsVendorItemValid(entry, item, maxcount, incrtime, extendedcost, 1))
+        const VendorItem vItem { item, maxcount, incrtime, extendedcost, type };
+        
+        if (!eObjectMgr->IsVendorItemValid(entry, vItem))
             return 0;
-        eObjectMgr->AddVendorItem(entry, item, maxcount, incrtime, extendedcost, 1);
+        eObjectMgr->AddVendorItem(entry, vItem);
 #else
         if (!eObjectMgr->IsVendorItemValid(false, "npc_vendor", entry, item, maxcount, incrtime, extendedcost, 0))
             return 0;

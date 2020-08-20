@@ -1958,7 +1958,13 @@ namespace LuaUnit
      */
     int ClearThreatList(lua_State* /*L*/, Unit* unit)
     {
+#ifdef TRINITY
+        unit->GetThreatManager().ClearAllThreat();
+#elif AZEROTHCORE
         unit->getThreatManager().clearReferences();
+#else
+        unit->GetThreatManager().clearReferences();
+#endif
         return 0;
     }
     
@@ -2861,7 +2867,7 @@ namespace LuaUnit
         uint32 spell = Eluna::CHECKVAL<uint32>(L, 4, 0);
 
 #ifdef TRINITY
-        unit->getThreatManager().addThreat(victim, threat, sSpellMgr->GetSpellInfo(spell)->GetSchoolMask(), spell ? sSpellMgr->GetSpellInfo(spell): nullptr);
+        unit->GetThreatManager().AddThreat(victim, threat, spell ? sSpellMgr->GetSpellInfo(spell) : NULL, true, true);
 #elif AZEROTHCORE
         uint32 schoolMask = Eluna::CHECKVAL<uint32>(L, 5, 0);
         if (schoolMask > SPELL_SCHOOL_MASK_ALL)

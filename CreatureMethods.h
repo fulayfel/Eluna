@@ -714,7 +714,7 @@ namespace LuaCreature
         ThreatList const& threatlist = creature->GetThreatManager().getThreatList();
 #endif
 #ifdef TRINITY
-        auto const& threatlist = creature->getThreatManager().getThreatList();
+        auto const& threatlist = creature->GetThreatManager().GetThreatenedByMeList();
 #endif
 #ifdef AZEROTHCORE
         auto const& threatlist = creature->getThreatManager().getThreatList();
@@ -728,7 +728,12 @@ namespace LuaCreature
         std::list<Unit*> targetList;
         for (auto itr = threatlist.begin(); itr != threatlist.end(); ++itr)
         {
+
+#ifdef TRINITY
+            Unit* target = itr->second->GetOwner();
+#else
             Unit* target = (*itr)->getTarget();
+#endif
             if (!target)
                 continue;
             if (playerOnly && target->GetTypeId() != TYPEID_PLAYER)
@@ -798,7 +803,7 @@ namespace LuaCreature
     int GetAITargets(lua_State* L, Creature* creature)
     {
 #ifdef TRINITY
-        auto const& threatlist = creature->getThreatManager().getThreatList();
+        auto const& threatlist = creature->GetThreatManager().GetThreatenedByMeList();
 #elif defined AZEROTHCORE
 auto const& threatlist = creature->getThreatManager().getThreatList();
 #else
@@ -809,7 +814,11 @@ auto const& threatlist = creature->getThreatManager().getThreatList();
         uint32 i = 0;
         for (auto itr = threatlist.begin(); itr != threatlist.end(); ++itr)
         {
+#ifdef TRINITY
+            Unit* target = itr->second->GetOwner();
+#else
             Unit* target = (*itr)->getTarget();
+#endif
             if (!target)
                 continue;
             Eluna::Push(L, target);
@@ -828,7 +837,7 @@ auto const& threatlist = creature->getThreatManager().getThreatList();
     int GetAITargetsCount(lua_State* L, Creature* creature)
     {
 #ifdef TRINITY
-        Eluna::Push(L, creature->getThreatManager().getThreatList().size());
+        Eluna::Push(L, creature->GetThreatManager().GetThreatenedByMeList().size());
 #elif AZEROTHCORE
         Eluna::Push(L, creature->getThreatManager().getThreatList().size());
 #else
