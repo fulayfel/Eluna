@@ -196,7 +196,7 @@ namespace LuaMap
 #if defined TRINITY
         float phasemask = Eluna::CHECKVAL<uint32>(L, 5, PHASEMASK_NORMAL);
 
-        Eluna::Push(L, map->GetAreaId(phasemask, x, y, z));
+        Eluna::Push(L, map->GetAreaId(PhasingHandler::GetEmptyPhaseShift(), x, y, z));
 #elif defined AZEROTHCORE
         Eluna::Push(L, map->GetAreaId(x, y, z));
 #else
